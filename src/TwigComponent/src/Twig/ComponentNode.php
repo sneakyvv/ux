@@ -48,8 +48,7 @@ final class ComponentNode extends EmbedNode
         ;
 
         $this->addGetTemplate($compiler);
-
-        $compiler->raw('->display($props);');
+        $compiler->write('->display($props, $blocks);');
         $compiler->raw("\n");
     }
 }
