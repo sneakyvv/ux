@@ -47,21 +47,17 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-yarn-
             - run: yarn --immutable && yarn build
-            - name: Check if js dist files are current
-              id: changes
-              run: |
-                echo "STATUS=$(git status --porcelain)" >> $GITHUB_OUTPUT
 
-            - name: No changes found
-              if: steps.changes.outputs.STATUS == ''
+            - name: Check if JS dist files are current
               run: |
-                echo "git status is clean"
-            - name: Changes were found
-              if: steps.changes.outputs.STATUS != ''
-              run: |
-                echo "JS dist files need to be rebuilt"
-                echo "${{ steps.changes.outputs.STATUS }}"
-                exit 1
+                if [[ -n $(git status --porcelain) ]]; then
+                  echo "The Git workspace is unclean! Changes detected:"
+                  git status --porcelain
+                  git diff
+                  exit 1
+                else
+                  echo "The Git workspace is clean. No changes detected."
+                fi
 
     tests-php-components:
         runs-on: ubuntu-latest
